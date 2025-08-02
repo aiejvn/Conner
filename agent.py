@@ -30,6 +30,7 @@ class Node(BaseModel):
     confidence: float
     uuid: str
     parent_uuid: str
+    progress: float
     
     def get(self, trait: str, default: str):
         """
@@ -81,7 +82,8 @@ class Agent:
             reason=response.output_parsed.reason,
             confidence=response.output_parsed.confidence,
             uuid=node_uuid,
-            parent_uuid=parent_uuid
+            parent_uuid=parent_uuid,
+            progress=response.output_parsed.progress
         )
         self.conv_nodes.append(node)
 
@@ -101,8 +103,8 @@ class Agent:
             cur_node = self.get_response_one(last_response)
             print(cur_node)
             print(last_response)
-            if cur_node.tool == 'N/A':
-                return cur_node
+            
+            if cur_node.progress >= 1: return cur_node
             else:
                 print("Conner needs another node...")
                 client = genai.Client(api_key=os.environ['GEMINI_API_KEY'])
@@ -116,7 +118,7 @@ class Agent:
                         # Needs a logic translation prompt. W/O, GEMINI will just shrug and await user clarification.
                         response = client.models.generate_content(
                             model="gemini-2.5-flash",
-                            contents=f"Translate the following reasoning into a set of criteria to apply to a search. Output must be in point form."
+                            contents=f"Translate the following reasoning into a set of criteria to apply to a search. Output must be in point form. {cur_node.reason}"
                         )
                         print(response.text)
                         last_response = search_emails(emails, response.text)
@@ -124,7 +126,7 @@ class Agent:
                         print("Tagging emails...")
                         response = client.models.generate_content(
                             model="gemini-2.5-flash",
-                            contents=f"Translate the following reasoning into a set of tags and the criteria for each tag to apply. Output must be in point form (e.g. 'Delegate - all internal emails about unimportant tasks')."
+                            contents=f"Translate the following reasoning into a set of tags and the criteria for each tag to apply. Output must be in point form (e.g. 'Delegate - all internal emails about unimportant tasks'). {cur_node.reason}"
                         )
                         print(response.text)
                         last_response = tag_emails(emails, response.text)

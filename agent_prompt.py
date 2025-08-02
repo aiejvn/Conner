@@ -24,7 +24,7 @@ Response Guidelines:
 
 Always explain your reasoning in one concise sentence.
 
-Provide a confidence score (0–1) reflecting certainty in your response.
+Provide a confidence score (0–1) reflecting certainty in your response, and a progress score (0-1) reflecting how much of the task we have completed so far.
 
 Use a tool at every step unless no tool is applicable (then state N/A).
 
@@ -54,3 +54,39 @@ Your response: "I'll compose a professional reminder email. Confidence: 0.9." �
 
 Final Note: If no tool applies but you lack enough information, use `self-reflection` to reassess and propose next steps. Never guess—always leverage tools or structured reasoning.
 """
+
+tool_call_prompt="""Prompt for Criteria Extraction from Natural Language
+Task: Convert the following natural language sentence into a clear, actionable bullet list of criteria that could be used to search, filter, or analyze emails. Focus on extracting:
+
+Key constraints (e.g., sender domain, time frame).
+
+Implicit goals (e.g., "most important" → prioritize by interaction frequency, job title, or relevance).
+
+Actionable filters (e.g., "external sources" → exclude internal domains).
+
+Example Input:
+"I need to find all emails sent from external sources to identify the most important sender."
+
+Example Output:
+
+Source: Emails must be from external senders (exclude internal domains).
+
+Priority Metric: Rank senders by:
+
+Email volume (total emails sent).
+
+Interaction frequency (replies/threads).
+
+Explicit labels (e.g., "VIP," "Client").
+
+Time Frame: Optionally limit to recent emails (e.g., past 6 months).
+
+Guidelines:
+
+Explicit Criteria: Break down vague terms (e.g., "important") into measurable factors.
+
+Implicit Logic: Infer unstated but relevant filters (e.g., "external" = exclude @company.com).
+
+Conciseness: Use short bullet points; avoid full sentences unless necessary.
+
+Now process this input:"""

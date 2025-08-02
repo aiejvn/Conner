@@ -41,12 +41,14 @@ def search_emails(emails: List[Dict], criteria: str) -> List[str]:
         contents=prompt
     )
     
-    # Parse the output string list into a Python list
+    # Manually parse the output string list into a Python list
     try:
-        email_ids = ast.literal_eval(response.text)
-    except json.JSONDecodeError:
+        email_ids = response.text.strip("[]").replace(" ", "").split(",")
+        email_ids = [email_id.strip("'") for email_id in email_ids]
+    except Exception as e:
         print("Could not parse the response into a list:")
         print(response.text)
+        print(f"Error: {e}")
         return ""
 
     # Collect the contents of each email into one string
