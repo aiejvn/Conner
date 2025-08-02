@@ -194,14 +194,18 @@ if view_nodes and "debug_nodes" in st.session_state:
                             st.session_state.tool_result = new_write_node['tool_result']
                             st.session_state.last_node_uuid = new_write_node['uuid']
                             st.session_state.node_flow_mode = 'two'
+                        # If feedback is submitted for the third node (i==2 in original order)
+                        elif st.session_state.get('node_flow_mode') == 'three' and i == 2:
+                            # Change only the third node's contents
+                            nodes[2]['tool_result'] = debug_write_response_3_value
+                            nodes[2]['reason'] = debug_write_response_3_reason
+                            st.session_state.debug_nodes = nodes
+                            st.session_state.last_response = nodes[2]['reason']
+                            st.session_state.tool_result = nodes[2]['tool_result']
+                            st.session_state.last_node_uuid = nodes[2]['uuid']
                         st.session_state.show_feedback_form[button_key] = False
                         st.success("Feedback submitted successfully!")
-                        
                         print(f"Line 202: we have {len(st.session_state.debug_nodes)} nodes") 
-                        
                         st.rerun()
-                elif cancel_button:
-                    st.session_state.show_feedback_form[button_key] = False
-                    st.rerun()
         st.markdown("---")
 
