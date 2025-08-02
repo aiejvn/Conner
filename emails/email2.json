@@ -1,0 +1,38 @@
+{
+      "id": "email_002",
+      "timestamp": "2025-08-01T14:30:00Z",
+      "from": {
+        "name": "Michael Johnson",
+        "email": "m.johnson@techsolutions.com",
+        "department": "External"
+      },
+      "to": [
+        {
+          "name": "Alex Chen",
+          "email": "alex.chen@company.com",
+          "department": "Marketing"
+        }
+      ],
+      "cc": [
+        {
+          "name": "Lisa Park",
+          "email": "lisa.park@company.com",
+          "department": "Procurement"
+        }
+      ],
+      "bcc": [],
+      "subject": "Proposal for Q4 Marketing Analytics Platform",
+      "body": "Dear Alex,\n\nThank you for taking the time to meet with our team last week. As discussed, I'm attaching our comprehensive proposal for implementing our marketing analytics platform for Q4.\n\nKey highlights include:\n- 25% improvement in campaign ROI tracking\n- Real-time dashboard integration\n- Comprehensive training package\n- 24/7 technical support\n\nThe total investment would be $45,000 with implementation starting October 1st. I'm available for a follow-up call this week to address any questions.\n\nBest regards,\nMichael Johnson\nSenior Sales Manager",
+      "priority": "high",
+      "category": "vendor",
+      "attachments": [
+        {
+          "filename": "TechSolutions_Marketing_Proposal_Q4.pdf",
+          "size": "2.1MB",
+          "type": "application/pdf"
+        }
+      ],
+      "read": false,
+      "flagged": true,
+      "tags": ["proposal", "vendor", "analytics", "q4"]
+    }

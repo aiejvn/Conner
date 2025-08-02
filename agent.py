@@ -14,7 +14,6 @@ class Node(BaseModel):
     confidence: float
     uuid: str
     parent_uuid: str
-    role: str
 
 class Agent:
     def __init__(self):
@@ -31,7 +30,9 @@ class Agent:
 """You are a smart assistant with many tools at your disposal. 
 Follow the user's commands as best as you can, and include a brief, one-sentence explaining your thinking, as well as a confidence value between 0 and 1 expressing how confident you are in your reasoning.
 If no tool is needed, simply return N/A as tool used.
-If your confidence is >=0.9, include an answer alongside your reasoning."""}
+If your confidence is >=0.9, include an answer alongside your reasoning.
+Otherwise, describe what information you have and what information you are looking for, as if handing off the problem to someone else.
+Make sure to consider all reasonable routes when deciding output. Only use specific tools when they seem reasonable."""}
         ]
         self.conv_nodes = []
         
@@ -61,8 +62,7 @@ If your confidence is >=0.9, include an answer alongside your reasoning."""}
             reason=response.output_parsed.reason,
             confidence=response.output_parsed.confidence,
             uuid=node_uuid,
-            parent_uuid=parent_uuid,
-            role="user",
+            parent_uuid=parent_uuid
         )
         self.conv_nodes.append(node)
 

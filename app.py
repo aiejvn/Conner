@@ -1,5 +1,7 @@
 import streamlit as st
 from agent import Agent
+import os
+import json
 
 # Initialize the agent
 agent = Agent()
@@ -32,6 +34,7 @@ if submit_button and user_input.strip():
 
     # Store the response in session state
     st.session_state.last_response = response_node.reason
+    st.session_state.last_node_uuid = response_node.uuid
 
 # Display the response if available
 if "last_response" in st.session_state:
@@ -42,6 +45,41 @@ if "last_response" in st.session_state:
         disabled=True,
         key="conner_response_final"
     )
+
+# Toggle to view nodes
+
+# TODO: Come back here once tools are done. Then test on complex MCP tasks.
+debug=True
+view_nodes = st.checkbox("View Nodes")
+if view_nodes and (debug or "last_node_uuid" in st.session_state):
+    # current_uuid = st.session_state.last_node_uuid
+    current_uuid = "test1"
+    nodes = []
+
+    # Read nodes recursively
+    while current_uuid != "root":
+        node_path = f"./nodes/{current_uuid}.json"
+        # print(node_path)
+        if os.path.exists(node_path):
+            with open(node_path, "r") as f:
+                node_data = json.load(f)
+                nodes.append(node_data)
+                current_uuid = node_data.get("parent_uuid", "root")
+        else:
+            break
+
+    # Display nodes as a tree-style flowgraph
+    st.markdown("### Flowgraph of Nodes")
+    for i, node in enumerate(reversed(nodes)): # Reverse order
+        st.markdown(f"**Node {i+1}:**")
+        st.markdown(f"- **Tool Used:** {node['tool']}")
+        st.markdown(f"- **Reason:** {node['reason']}")
+        st.markdown(f"- **Confidence:** {node['confidence']}")
+        
+        reset_button_i = st.button("Fix Thinking", key=f"button_node_{i+1}")
+        st.markdown("---")
+        
+        
 
 # Instructions
 st.markdown("---")

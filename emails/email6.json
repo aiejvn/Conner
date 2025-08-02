@@ -1,0 +1,32 @@
+{
+      "id": "email_006",
+      "timestamp": "2025-08-02T10:30:00Z",
+      "from": {
+        "name": "Dr. Rachel Green",
+        "email": "rgreen@university.edu",
+        "department": "External"
+      },
+      "to": [
+        {
+          "name": "Alex Chen",
+          "email": "alex.chen@company.com",
+          "department": "Marketing"
+        }
+      ],
+      "cc": [],
+      "bcc": [],
+      "subject": "Speaking Opportunity - Digital Marketing Conference 2025",
+      "body": "Dear Alex,\n\nI hope this message finds you well. I'm reaching out from the University Digital Marketing Research Center regarding our upcoming Digital Marketing Conference 2025, scheduled for November 14-16.\n\nBased on your recent work in AI-driven marketing campaigns, we would like to invite you to speak on a panel about \"The Future of Personalized Marketing.\" The session would be 45 minutes including Q&A, and we can offer a $2,000 honorarium plus travel expenses.\n\nThe conference attracts over 800 marketing professionals and academics. Would you be interested in participating? If so, I'd love to schedule a brief call to discuss details.\n\nBest regards,\nDr. Rachel Green\nConference Program Director",
+      "priority": "normal",
+      "category": "opportunity",
+      "attachments": [
+        {
+          "filename": "Conference_Program_Outline.pdf",
+          "size": "1.5MB",
+          "type": "application/pdf"
+        }
+      ],
+      "read": false,
+      "flagged": false,
+      "tags": ["speaking", "conference", "opportunity", "external"]
+    }

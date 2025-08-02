@@ -1,0 +1,26 @@
+{
+      "id": "email_003",
+      "timestamp": "2025-08-02T08:45:00Z",
+      "from": {
+        "name": "David Kim",
+        "email": "david.kim@company.com",
+        "department": "IT"
+      },
+      "to": [
+        {
+          "name": "Alex Chen",
+          "email": "alex.chen@company.com",
+          "department": "Marketing"
+        }
+      ],
+      "cc": [],
+      "bcc": [],
+      "subject": "Scheduled System Maintenance - August 5th",
+      "body": "Hi Alex,\n\nThis is a reminder that we have scheduled system maintenance on Monday, August 5th from 1:00 AM to 4:00 AM EST.\n\nAffected systems:\n- Email servers\n- CRM database\n- Marketing automation tools\n- File sharing platforms\n\nPlease ensure any critical work is completed before 1:00 AM or plan accordingly. All systems should be fully operational by 4:00 AM.\n\nIf you have any urgent concerns, please reach out before the maintenance window.\n\nThanks,\nDavid\nIT Operations Team",
+      "priority": "normal",
+      "category": "system",
+      "attachments": [],
+      "read": true,
+      "flagged": false,
+      "tags": ["maintenance", "it", "systems", "reminder"]
+    }

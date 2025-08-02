@@ -1,0 +1,26 @@
+{
+      "id": "email_007",
+      "timestamp": "2025-08-01T13:45:00Z",
+      "from": {
+        "name": "System Administrator",
+        "email": "noreply@company.com",
+        "department": "System"
+      },
+      "to": [
+        {
+          "name": "Alex Chen",
+          "email": "alex.chen@company.com",
+          "department": "Marketing"
+        }
+      ],
+      "cc": [],
+      "bcc": [],
+      "subject": "Password Expiration Reminder - Action Required",
+      "body": "Dear Alex Chen,\n\nThis is an automated reminder that your company password will expire in 3 days (August 4th, 2025).\n\nTo change your password:\n1. Log into the company portal\n2. Navigate to Account Settings\n3. Select 'Change Password'\n4. Follow the security requirements\n\nPassword Requirements:\n- Minimum 12 characters\n- Include uppercase, lowercase, numbers, and special characters\n- Cannot reuse last 6 passwords\n\nFor assistance, contact IT Support at ext. 4455.\n\nThis is an automated message - please do not reply.",
+      "priority": "normal",
+      "category": "security",
+      "attachments": [],
+      "read": true,
+      "flagged": false,
+      "tags": ["password", "security", "automated", "reminder"]
+    }

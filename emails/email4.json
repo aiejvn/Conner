@@ -1,0 +1,32 @@
+{
+      "id": "email_004",
+      "timestamp": "2025-08-02T11:20:00Z",
+      "from": {
+        "name": "Jennifer Williams",
+        "email": "j.williams@company.com",
+        "department": "Finance"
+      },
+      "to": [
+        {
+          "name": "Alex Chen",
+          "email": "alex.chen@company.com",
+          "department": "Marketing"
+        }
+      ],
+      "cc": [
+        {
+          "name": "Robert Taylor",
+          "email": "r.taylor@company.com",
+          "department": "Finance"
+        }
+      ],
+      "bcc": [],
+      "subject": "Q3 Budget Review Meeting - Action Items Required",
+      "body": "Hi Alex,\n\nFollowing up on yesterday's Q3 budget review meeting, here are the action items we discussed for the Marketing department:\n\n1. Provide detailed breakdown of digital advertising spend by platform\n2. Submit revised Q4 budget projections with 8% reduction\n3. Justify headcount increase request for social media specialist\n\nPlease have these items completed by August 9th so we can finalize budget allocations before the board meeting on August 12th.\n\nLet me know if you need any clarification on the requirements.\n\nBest,\nJennifer Williams\nFinance Manager",
+      "priority": "high",
+      "category": "finance",
+      "attachments": [],
+      "read": false,
+      "flagged": true,
+      "tags": ["budget", "action-items", "deadline", "q3-review"]
+    }
