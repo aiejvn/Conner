@@ -1,18 +1,19 @@
 import streamlit as st
+from agent import Agent
 import os
 import json
 import random
 import string
-from agent import Agent
 
-# Debug response values (simulated)
+# Initialize the agent
+agent = Agent()
 debug_write_response_2uuid='304d5122-c5ba-4d34-9dbf-1fa24754143a' 
 
 debug_write_response_3_value="Subject Line: Prioritized Follow-ups: External Communications Review\n\nEmail Body:\nTeam,\n\nWe've identified two external emails requiring follow-up.\n\nOur immediate focus should be on the email concerning the Q4 marketing platform proposal. This item takes priority due to its potential for immediate business impact.\n\nThe second email, regarding a speaking opportunity at a digital marketing conference, is also significant. However, for initial follow-up, it should receive a lower priority compared to the marketing platform proposal.\n\nPlease prioritize action accordingly.\n\nBest regards,\n\n[Your Name/Role]\n\nConfidence Note: All demands were fully met using the available facts. The email clearly prioritizes the Q4 marketing platform proposal based on immediate business impact, while assigning a lower initial priority to the speaking opportunity, as requested. No information beyond the provided facts was included."
 debug_write_response_3_reason="I have identified two important external emails: one about a proposal for a Q4 marketing platform and another regarding a speaking opportunity at a digital marketing conference. Both are significant, but initial follow-up on a potential new platform might have more immediate business impact.",
 
 # Debug flag
-DEBUG_MODE = True
+DEBUG_MODE = False
 
 # Helper: Apply debug flow overrides
 def apply_debug_overrides(nodes):
@@ -36,7 +37,7 @@ def apply_debug_overrides(nodes):
     return nodes
 
 # Streamlit app title
-st.title("Work with Conner")
+st.title("Admin with Conner")
         
 # Instructions
 st.markdown("---")
@@ -66,20 +67,31 @@ with st.form(key="chat_form", clear_on_submit=True):
     )
     submit_button = st.form_submit_button("Send")
 
-# Initialize the agent
-agent = Agent()
-
-# On submit, get three nodes from the agent
+# Debug: Always use a fixed set of nodes for demonstration
 if submit_button and user_input.strip():
-    # Use agent to get three nodes (simulate three calls)
-    node1 = agent.get_response_one(user_input.strip())
-    node2 = agent.get_response_one(node1.tool_result)
-    node3 = agent.get_response_one(node2.tool_result)
-    st.session_state.last_node_uuid = node3.uuid
-    st.session_state.debug_nodes = [node1.dict(), node2.dict(), node3.dict()]
-    st.session_state.last_response = node3.reason
-    st.session_state.tool_result = node3.tool_result
-    st.session_state.node_flow_mode = 'three'  # Track current flow mode
+    # Simulate a search node and a write node
+    search_node = {
+        'uuid': 'debug-search-uuid',
+        'tool': 'search_emails',
+        'reason': debug_write_response_3_reason,
+        'confidence': 0.9,
+        'parent_uuid': 'root',
+        'progress': 0.9,
+        'tool_result': 'Found 2 important external emails.'
+    }
+    write_node = {
+        'uuid': 'debug-write-uuid',
+        'tool': 'write_email',
+        'reason': debug_write_response_3_reason,
+        'confidence': 1.0,
+        'parent_uuid': 'debug-search-uuid',
+        'progress': 1.0,
+        'tool_result': debug_write_response_3_value
+    }
+    st.session_state.last_node_uuid = write_node['uuid']
+    st.session_state.debug_nodes = [search_node, write_node]
+    st.session_state.last_response = write_node['reason']
+    st.session_state.tool_result = write_node['tool_result']
 
 # Display the response if available
 if "last_response" in st.session_state:
@@ -102,15 +114,12 @@ if "last_response" in st.session_state:
 view_nodes = st.checkbox("View Nodes")
 if view_nodes and "debug_nodes" in st.session_state:
     nodes = st.session_state.debug_nodes
-    
-    print(f"Line 105: we have {len(st.session_state.debug_nodes)} nodes") 
-
+    nodes = apply_debug_overrides(nodes)
     st.markdown("### Flowgraph of Nodes")
-    for i, node in enumerate(nodes):  # Display in original order (search1, search2, write)
+    for i, node in enumerate(reversed(nodes)): # Reverse order
         st.markdown(f"**Node {i+1}:**")
         st.markdown(f"- **Tool Used:** {node.get('tool', 'N/A')}")
         tool_result = node.get('tool_result', '')
-        print(node.get('tool')) # skips one node
         if node.get('tool') == 'search_emails':
             st.text_area(
                 "Tool Output:",
@@ -176,29 +185,23 @@ if view_nodes and "debug_nodes" in st.session_state:
                     print("button triggered successfully")
                     with st.spinner("Conner is rethinking..."):
                         st.session_state.edit_node_index = i  # Track for debug override
-                        # If feedback is submitted for the second node (i==1 in original order)
-                        if st.session_state.get('node_flow_mode') == 'three' and i == 1:
-                            # Replace only the second search node with a new write node, keep the first search node
-                            new_uuid = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
-                            new_write_node = {
-                                'uuid': new_uuid,
-                                'tool': 'write_email',
-                                'reason': debug_write_response_3_reason,
-                                'confidence': 1.0,
-                                'parent_uuid': nodes[0]['uuid'],
-                                'progress': 1.0,
-                                'tool_result': debug_write_response_3_value
-                            }
-                            st.session_state.debug_nodes = [nodes[0], new_write_node]
-                            st.session_state.last_response = new_write_node['reason']
-                            st.session_state.tool_result = new_write_node['tool_result']
-                            st.session_state.last_node_uuid = new_write_node['uuid']
-                            st.session_state.node_flow_mode = 'two'
+                        # Simulate new write node on feedback
+                        new_uuid = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
+                        new_write_node = {
+                            'uuid': new_uuid,
+                            'tool': 'write_email',
+                            'reason': debug_write_response_3_reason,
+                            'confidence': 1.0,
+                            'parent_uuid': nodes[0]['uuid'],
+                            'progress': 1.0,
+                            'tool_result': debug_write_response_3_value
+                        }
+                        st.session_state.debug_nodes = [nodes[0], new_write_node]
+                        st.session_state.last_response = new_write_node['reason']
+                        st.session_state.tool_result = new_write_node['tool_result']
+                        st.session_state.last_node_uuid = new_write_node['uuid']
                         st.session_state.show_feedback_form[button_key] = False
                         st.success("Feedback submitted successfully!")
-                        
-                        print(f"Line 202: we have {len(st.session_state.debug_nodes)} nodes") 
-                        
                         st.rerun()
                 elif cancel_button:
                     st.session_state.show_feedback_form[button_key] = False
