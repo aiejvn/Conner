@@ -1,0 +1,9 @@
+{
+    "tool": "N/A",
+    "reason": "The message directly states who is attending the science fair.",
+    "confidence": 1.0,
+    "uuid": "229b283d-26c4-48cf-971e-f6168612b43d",
+    "parent_uuid": "root",
+    "role": "user",
+    "content": "Given the following message, who is going to a science fair? \n            \n            Alice and Bob are going to a science fair on Friday."
+}
