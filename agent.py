@@ -142,6 +142,7 @@ class Agent:
                         )
                         print(response.text)
                         last_response = write_email(knowledge.text, constraints.text)
+                        return cur_node # if we write, we will always exit
                     case _:
                         print(f"Tried using tool: {cur_node.tool}")
                         last_response = cur_node.reason

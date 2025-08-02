@@ -20,7 +20,7 @@ chat_container = st.container()
 with st.form(key="chat_form", clear_on_submit=True):
     user_input = st.text_input(
         "What would you like Conner to do?",
-        placeholder="Analyze the stock market...",
+        placeholder="Find all important meetings in my emails...",
         key="user_input"
     )
     
@@ -48,13 +48,14 @@ if "last_response" in st.session_state:
 
 # Toggle to view nodes
 
-# TODO: Come back here once tools are done. Then test on complex MCP tasks.
-debug=True
+debug=False
 view_nodes = st.checkbox("View Nodes")
 if view_nodes and (debug or "last_node_uuid" in st.session_state):
-    # current_uuid = st.session_state.last_node_uuid
-    current_uuid = "test1"
+    current_uuid = st.session_state.last_node_uuid
+    # current_uuid = "test1"
     nodes = []
+
+# TODO: Come back here once tools are done. 
 
     # Read nodes recursively
     while current_uuid != "root":
