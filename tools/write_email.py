@@ -106,10 +106,13 @@ def write_email(knowledge: str, constraints: str):
     else:
         prompt += "- None\n"
     
-    response = client.models.generate_content(
-        model="gemini-2.5-flash", contents=prompt
-    )
-    return response.text
+    # response = client.models.generate_content(
+    #     model="gemini-2.5-flash", contents=prompt
+    # )
+    # return response.text
+    
+    # for debug
+    return """Subject Line: Regarding Your Business Proposal - High Priority\n\nDear Michael Johnson,\n\nThank you for your email, which we have received. We note that it has been flagged as high priority and pertains to your business proposal.\n\nWe appreciate you bringing this to our attention and are currently reviewing it.\n\nRegards,\n\n[Your Name/Team]"""
 
 if __name__ == "__main__":
     print(write_email(

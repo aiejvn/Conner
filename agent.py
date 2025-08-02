@@ -13,6 +13,9 @@ from tools.search_emails import search_emails
 from tools.tag_email import tag_emails
 from tools.write_email import write_email
 
+debug_read_reason = "I'll search for emails from external sources to identify the most important sender."
+debug_write_reason = "Michael Johnson's email is high priority and involves a significant business proposal."
+
 def load_emails() -> List[Dict]:
     email_files = [f for f in os.listdir('./emails') if f.endswith('.json')]
     emails = []
@@ -69,63 +72,80 @@ class Agent:
             "role": "user",
             "content": input
         })
-        response = self.client.responses.parse(
-            model="gpt-4o-2024-08-06",
-            input=self.conversation,
-            text_format=Node
-        )
+        # response = self.client.responses.parse(
+        #     model="gpt-4o-2024-08-06",
+        #     input=self.conversation,
+        #     text_format=Node
+        # )
         
-        last_response = ""
-        emails = load_emails()
-        match response.output_parsed.tool:
-            case 'search_emails':
-                print("Searching emails...")
-                
-                # Needs a logic translation prompt. W/O, GEMINI will just shrug and await user clarification.
-                gemini_response = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=f"Translate the following reasoning into a set of criteria to apply to a search. Output must be in point form. {response.output_parsed.reason}"
-                )
-                # print(gemini_response.text)
-                last_response = search_emails(emails, gemini_response.text)
-                
-            case 'tag_emails':
-                print("Tagging emails...")
-                gemini_response = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=f"Translate the following reasoning into a set of tags and the criteria for each tag to apply. Output must be in point form (e.g. 'Delegate - all internal emails about unimportant tasks'). {response.output_parsed.reason}"
-                )
-                # print(gemini_response.text)
-                last_response = tag_emails(emails, gemini_response.text)
-                
-            case 'write_email':
-                print("Writing an email...")
-                knowledge = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=f"Extract all known facts from the following reasoning. Output must be in point form.\n{response.output_parsed.reason}"
-                )
-                constraints = client.models.generate_content(
-                    model="gemini-2.5-flash",
-                    contents=f"Extract all restrictions on our solution from the following reasoning. Output must be in point form.\n{response.output_parsed.reason}"
-                )
-                # print(knowledge.text, constraints.text)
-                last_response = write_email(knowledge.text, constraints.text)
-            case _:
-                print(f"Tried using tool: {response.output_parsed.tool}")
-                last_response = response.output_parsed.reason
+        # last_response = ""
+        # emails = load_emails()
+        # match response.output_parsed.tool:
+        #     case 'search_emails':
+        #         print("Searching emails...")
+        #         print(response.output_parsed.reason)
+        #         # gemini_response = client.models.generate_content(
+        #         #     model="gemini-2.5-flash",
+        #         #     contents=f"Translate the following reasoning into a set of criteria to apply to a search. Output must be in point form. {response.output_parsed.reason}"
+        #         # )
+        #         # print(gemini_response.text)
+        #         # last_response = search_emails(emails, gemini_response.text)
+        #         last_response = search_emails(emails, "debug")
+        #     case 'tag_emails':
+        #         print("Tagging emails...")
+        #         # gemini_response = client.models.generate_content(
+        #         #     model="gemini-2.5-flash",
+        #         #     contents=f"Translate the following reasoning into a set of tags and the criteria for each tag to apply. Output must be in point form (e.g. 'Delegate - all internal emails about unimportant tasks'). {response.output_parsed.reason}"
+        #         # )
+        #         # print(gemini_response.text)
+        #         # last_response = tag_emails(emails, gemini_response.text)
+        #         last_response = tag_emails(emails, "debug")
+        #     case 'write_email':
+        #         print("Writing an email...")
+        #         # knowledge = client.models.generate_content(
+        #         #     model="gemini-2.5-flash",
+        #         #     contents=f"Extract all known facts from the following reasoning. Output must be in point form.\n{response.output_parsed.reason}"
+        #         # )
+        #         # constraints = client.models.generate_content(
+        #         #     model="gemini-2.5-flash",
+        #         #     contents=f"Extract all restrictions on our solution from the following reasoning. Output must be in point form.\n{response.output_parsed.reason}"
+        #         # )
+        #         # print(knowledge.text, constraints.text)
+        #         # last_response = write_email(knowledge.text, constraints.text)
+        #         last_response = write_email("debug", "debug")
+        #     case _:
+        #         print(f"Tried using tool: {response.output_parsed.tool}")
+        #         last_response = response.output_parsed.reason
+
+        # Deterministic flow replacing OpenAI calls, dor debug pruposes
+        if len(self.conv_nodes) == 0:
+            tool = 'search_emails'
+            reason = debug_read_reason
+            confidence = 0.8
+            tool_result = search_emails(load_emails(), "debug")
+        elif len(self.conv_nodes) == 1:
+            tool = 'search_emails'
+            reason = debug_read_reason
+            confidence = 0.9
+            tool_result = search_emails(load_emails(), "debug")
+        else:
+            tool = 'write_email'
+            reason = debug_write_reason
+            confidence = 1.0
+            tool_result = write_email("debug", "debug")
 
         # Generate UUID for the new node
         node_uuid = str(uuid.uuid4())
 
         # Create Node instance
         node = Node(
-            tool=response.output_parsed.tool,
-            reason=response.output_parsed.reason,
-            confidence=response.output_parsed.confidence,
+            tool=tool,
+            reason=reason,
+            confidence=confidence,
             uuid=node_uuid,
             parent_uuid=parent_uuid,
-            progress=response.output_parsed.progress,
-            tool_result=last_response
+            progress=confidence,
+            tool_result=tool_result
         )
         self.conv_nodes.append(node)
 

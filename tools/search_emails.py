@@ -36,18 +36,23 @@ def search_emails(emails: List[Dict], criteria: str) -> List[str]:
             prompt += f"{criteria}\n"
     else:
         prompt += "- None\n"       
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=prompt
-    )
+    # response = client.models.generate_content(
+    #     model="gemini-2.5-flash",
+    #     contents=prompt
+    # )
+    
+    # for debug
+    response = "['email2.json', 'email6.json']"
     
     # Manually parse the output string list into a Python list
     try:
-        email_ids = response.text.strip("[]").replace(" ", "").split(",")
+        # email_ids = response.text.strip("[]").replace(" ", "").split(",")
+        email_ids = response.strip("[]").replace(" ", "").split(",")
         email_ids = [email_id.strip("'") for email_id in email_ids]
     except Exception as e:
         print("Could not parse the response into a list:")
-        print(response.text)
+        # print(response.text)
+        print(response)
         print(f"Error: {e}")
         return ""
 
@@ -60,7 +65,7 @@ def search_emails(emails: List[Dict], criteria: str) -> List[str]:
                 email_data = json.load(f)
                 collected_emails += json.dumps(email_data, indent=4) + "\n"
         else:
-            print(f"Email file {email_id} not found.")
+            print(f"Email file ./emails/{email_id} not found.")
 
     return collected_emails
     
