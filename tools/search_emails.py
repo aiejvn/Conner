@@ -42,8 +42,10 @@ def search_emails(emails: List[Dict], criteria: str) -> List[str]:
     # )
     
     # for debug
+    import time
+    import random as pyrandom
     response = "['email2.json', 'email6.json']"
-    
+
     # Manually parse the output string list into a Python list
     try:
         # email_ids = response.text.strip("[]").replace(" ", "").split(",")
@@ -67,6 +69,8 @@ def search_emails(emails: List[Dict], criteria: str) -> List[str]:
         else:
             print(f"Email file ./emails/{email_id} not found.")
 
+    # Add a random delay between 8 and 10 seconds before returning
+    time.sleep(pyrandom.uniform(8, 10))
     return collected_emails
     
 if __name__ == '__main__':

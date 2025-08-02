@@ -8,7 +8,7 @@ from agent import Agent
 # Debug response values (simulated)
 debug_write_response_2uuid='304d5122-c5ba-4d34-9dbf-1fa24754143a' 
 
-debug_write_response_3_value="Subject Line: Prioritized Follow-ups: External Communications Review\n\nEmail Body:\nTeam,\n\nWe've identified two external emails requiring follow-up.\n\nOur immediate focus should be on the email concerning the Q4 marketing platform proposal. This item takes priority due to its potential for immediate business impact.\n\nThe second email, regarding a speaking opportunity at a digital marketing conference, is also significant. However, for initial follow-up, it should receive a lower priority compared to the marketing platform proposal.\n\nPlease prioritize action accordingly.\n\nBest regards,\n\n[Your Name/Role]\n\nConfidence Note: All demands were fully met using the available facts. The email clearly prioritizes the Q4 marketing platform proposal based on immediate business impact, while assigning a lower initial priority to the speaking opportunity, as requested. No information beyond the provided facts was included."
+debug_write_response_3_value="Subject Line: Prioritized Follow-ups: External Communications Review\n\nEmail Body:\nTeam,\n\nWe've identified two external emails requiring follow-up.\n\nOur immediate focus should be on the email concerning the Q4 marketing platform proposal. This item takes priority due to its potential for immediate business impact.\n\nThe second email, regarding a speaking opportunity at a digital marketing conference, is also significant. However, for initial follow-up, it should receive a lower priority compared to the marketing platform proposal.\n\nPlease prioritize action accordingly.\n\nBest regards,\n\n[Your Name/Role]"
 debug_write_response_3_reason="I have identified two important external emails: one about a proposal for a Q4 marketing platform and another regarding a speaking opportunity at a digital marketing conference. Both are significant, but initial follow-up on a potential new platform might have more immediate business impact.",
 
 # Debug flag
@@ -28,6 +28,10 @@ def apply_debug_overrides(nodes):
                 return [search_node, write_node]
         elif edit_idx == 2:
             if len(nodes) > 2:
+                import time
+                import random
+                
+                time.sleep(random.uniform(8,10))
                 new_uuid = ''.join(random.choices(string.ascii_lowercase + string.digits, k=32))
                 nodes[2]['uuid'] = new_uuid
                 nodes[2]['tool_result'] = debug_write_response_3_value
