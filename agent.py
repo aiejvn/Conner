@@ -5,6 +5,7 @@ from pydantic import BaseModel
 import uuid
 import json
 
+from time import sleep
 
 
 class Node(BaseModel):
@@ -14,7 +15,6 @@ class Node(BaseModel):
     uuid: str
     parent_uuid: str
     role: str
-    content: str
 
 class Agent:
     def __init__(self):
@@ -30,11 +30,12 @@ class Agent:
             "content": 
 """You are a smart assistant with many tools at your disposal. 
 Follow the user's commands as best as you can, and include a brief, one-sentence explaining your thinking, as well as a confidence value between 0 and 1 expressing how confident you are in your reasoning.
-If no tool is needed, simply return N/A as tool used."""}
+If no tool is needed, simply return N/A as tool used.
+If your confidence is >=0.9, include an answer alongside your reasoning."""}
         ]
         self.conv_nodes = []
         
-    def get_response(self, input: str):
+    def get_response_one(self, input: str):
         """
         Get a response from the agent for a query.
         In: text
@@ -62,7 +63,6 @@ If no tool is needed, simply return N/A as tool used."""}
             uuid=node_uuid,
             parent_uuid=parent_uuid,
             role="user",
-            content=input
         )
         self.conv_nodes.append(node)
 
@@ -71,10 +71,23 @@ If no tool is needed, simply return N/A as tool used."""}
             json.dump(node.dict(), f, indent=4)
 
         return node
+    
+    def get_response(self, input:str):
+        """
+        Calls get_response_one until confidence exceeds threshold of 0.9.
+        Then returns final result, as a node.
+        """
+        while True:
+            cur_node = self.get_response_one(input)
+            if cur_node.confidence >= 0.9:
+                return cur_node
+            else:
+                print("Conner needs another node...")
+                sleep(1) # To avoid overloading our API key
 
 if __name__ == '__main__':
     test_agent = Agent()
     test_rsp = test_agent.get_response("""Given the following message, who is going to a science fair? 
             
             Alice and Bob are going to a science fair on Friday.""")
-    print(f"tool: {test_rsp.tool}  \nconfidence:{test_rsp.confidence} \nreason:{test_rsp.reason}")
+    print(test_rsp)
