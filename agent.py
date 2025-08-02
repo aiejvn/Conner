@@ -32,6 +32,7 @@ Follow the user's commands as best as you can, and include a brief, one-sentence
 If no tool is needed, simply return N/A as tool used.
 If your confidence is >=0.9, include an answer alongside your reasoning.
 Otherwise, describe what information you have and what information you are looking for, as if handing off the problem to someone else.
+If no tool applies but you still cannot determine an answer, use the 'self-reflection' tool and try to make connections between currently known facts.
 Make sure to consider all reasonable routes when deciding output. Only use specific tools when they seem reasonable."""}
         ]
         self.conv_nodes = []

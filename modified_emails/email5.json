@@ -1,0 +1,32 @@
+{
+    "id": "email_005",
+    "timestamp": "2025-08-02T16:10:00Z",
+    "from": {
+        "name": "Emma Rodriguez",
+        "email": "emma.rodriguez@company.com",
+        "department": "Marketing"
+    },
+    "to": [
+        {
+            "name": "Alex Chen",
+            "email": "alex.chen@company.com",
+            "department": "Marketing"
+        }
+    ],
+    "cc": [],
+    "bcc": [],
+    "subject": "Great job on the campaign launch!",
+    "body": "Hey Alex,\n\nI wanted to reach out and congratulate you on the successful launch of the summer campaign! The initial metrics look fantastic - we're already seeing a 15% increase in engagement compared to last quarter.\n\nThe creative team mentioned how smooth the collaboration was, and the client feedback has been overwhelmingly positive. Your attention to detail and project management skills really made the difference.\n\nLooking forward to seeing the full results next week!\n\nCheers,\nEmma",
+    "priority": "normal",
+    "category": "praise",
+    "attachments": [],
+    "read": true,
+    "flagged": false,
+    "tags": [
+        "congratulations",
+        "campaign",
+        "teamwork",
+        "success",
+        "To Respond Later"
+    ]
+}

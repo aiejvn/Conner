@@ -1,0 +1,39 @@
+{
+    "id": "email_008",
+    "timestamp": "2025-08-02T09:15:00Z",
+    "from": {
+        "name": "Carlos Mendez",
+        "email": "carlos.mendez@company.com",
+        "department": "Sales"
+    },
+    "to": [
+        {
+            "name": "Alex Chen",
+            "email": "alex.chen@company.com",
+            "department": "Marketing"
+        }
+    ],
+    "cc": [
+        {
+            "name": "Amanda Foster",
+            "email": "amanda.foster@company.com",
+            "department": "Sales"
+        }
+    ],
+    "bcc": [],
+    "subject": "Lead Quality Feedback - Q3 Marketing Campaigns",
+    "body": "Hi Alex,\n\nI wanted to provide some feedback on the leads generated from the recent Q3 marketing campaigns. Overall, we're seeing great improvement!\n\nPositive trends:\n- Lead quality score increased by 22%\n- Conversion rate from MQL to SQL up 18%\n- Average deal size 12% higher than Q2\n\nAreas for improvement:\n- Tech industry leads need better qualification\n- Geographic targeting could be refined for West Coast\n\nCould we schedule a 30-minute meeting next week to discuss optimizing the lead scoring criteria? I think we can push conversion rates even higher.\n\nThanks for the great collaboration!\n\nCarlos\nSenior Sales Manager",
+    "priority": "normal",
+    "category": "feedback",
+    "attachments": [],
+    "read": false,
+    "flagged": false,
+    "tags": [
+        "feedback",
+        "leads",
+        "sales",
+        "collaboration",
+        "q3",
+        "High Priority"
+    ]
+}

@@ -1,0 +1,31 @@
+{
+    "id": "email_001",
+    "timestamp": "2025-08-01T09:15:00Z",
+    "from": {
+        "name": "Sarah Martinez",
+        "email": "sarah.martinez@company.com",
+        "department": "Human Resources"
+    },
+    "to": [
+        {
+            "name": "Alex Chen",
+            "email": "alex.chen@company.com",
+            "department": "Marketing"
+        }
+    ],
+    "cc": [],
+    "bcc": [],
+    "subject": "Team Building Workshop - August 15th",
+    "body": "Hi Alex,\n\nI hope this email finds you well. I'm reaching out to confirm your attendance at our upcoming team building workshop scheduled for August 15th from 2:00 PM to 5:00 PM in Conference Room B.\n\nThe workshop will focus on improving cross-departmental collaboration and communication skills. Please let me know by August 8th if you'll be attending so we can finalize catering arrangements.\n\nLooking forward to your participation!\n\nBest regards,\nSarah",
+    "priority": "normal",
+    "category": "meeting",
+    "attachments": [],
+    "read": false,
+    "flagged": false,
+    "tags": [
+        "team-building",
+        "workshop",
+        "hr",
+        "High Priority"
+    ]
+}
