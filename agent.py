@@ -23,6 +23,7 @@ def load_emails() -> List[Dict]:
             emails.append(email_data)
     return emails
 
+client = genai.Client(api_key=os.environ['GEMINI_API_KEY'])
 
 class Node(BaseModel):
     tool: str
@@ -31,6 +32,7 @@ class Node(BaseModel):
     uuid: str
     parent_uuid: str
     progress: float
+    tool_result: str
     
     def get(self, trait: str, default: str):
         """
@@ -72,6 +74,45 @@ class Agent:
             input=self.conversation,
             text_format=Node
         )
+        
+        last_response = ""
+        emails = load_emails()
+        match response.output_parsed.tool:
+            case 'search_emails':
+                print("Searching emails...")
+                
+                # Needs a logic translation prompt. W/O, GEMINI will just shrug and await user clarification.
+                gemini_response = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=f"Translate the following reasoning into a set of criteria to apply to a search. Output must be in point form. {response.output_parsed.reason}"
+                )
+                # print(gemini_response.text)
+                last_response = search_emails(emails, gemini_response.text)
+                
+            case 'tag_emails':
+                print("Tagging emails...")
+                gemini_response = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=f"Translate the following reasoning into a set of tags and the criteria for each tag to apply. Output must be in point form (e.g. 'Delegate - all internal emails about unimportant tasks'). {response.output_parsed.reason}"
+                )
+                # print(gemini_response.text)
+                last_response = tag_emails(emails, gemini_response.text)
+                
+            case 'write_email':
+                print("Writing an email...")
+                knowledge = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=f"Extract all known facts from the following reasoning. Output must be in point form.\n{response.output_parsed.reason}"
+                )
+                constraints = client.models.generate_content(
+                    model="gemini-2.5-flash",
+                    contents=f"Extract all restrictions on our solution from the following reasoning. Output must be in point form.\n{response.output_parsed.reason}"
+                )
+                # print(knowledge.text, constraints.text)
+                last_response = write_email(knowledge.text, constraints.text)
+            case _:
+                print(f"Tried using tool: {response.output_parsed.tool}")
+                last_response = response.output_parsed.reason
 
         # Generate UUID for the new node
         node_uuid = str(uuid.uuid4())
@@ -83,7 +124,8 @@ class Agent:
             confidence=response.output_parsed.confidence,
             uuid=node_uuid,
             parent_uuid=parent_uuid,
-            progress=response.output_parsed.progress
+            progress=response.output_parsed.progress,
+            tool_result=last_response
         )
         self.conv_nodes.append(node)
 
@@ -101,51 +143,13 @@ class Agent:
         last_response = input
         while True:
             cur_node = self.get_response_one(last_response)
-            print(cur_node)
-            print(last_response)
+            # print(cur_node.tool)
             
-            if cur_node.progress >= 1: return cur_node
-            else:
-                print("Conner needs another node...")
-                client = genai.Client(api_key=os.environ['GEMINI_API_KEY'])
-                emails = load_emails()
-                
-                # Issue: Self-loop on searching? 
-                match cur_node.tool:
-                    case 'search_emails':
-                        print("Searching emails...")
-                        
-                        # Needs a logic translation prompt. W/O, GEMINI will just shrug and await user clarification.
-                        response = client.models.generate_content(
-                            model="gemini-2.5-flash",
-                            contents=f"Translate the following reasoning into a set of criteria to apply to a search. Output must be in point form. {cur_node.reason}"
-                        )
-                        print(response.text)
-                        last_response = search_emails(emails, response.text)
-                    case 'tag_emails':
-                        print("Tagging emails...")
-                        response = client.models.generate_content(
-                            model="gemini-2.5-flash",
-                            contents=f"Translate the following reasoning into a set of tags and the criteria for each tag to apply. Output must be in point form (e.g. 'Delegate - all internal emails about unimportant tasks'). {cur_node.reason}"
-                        )
-                        print(response.text)
-                        last_response = tag_emails(emails, response.text)
-                    case 'write_email':
-                        print("Writing an email...")
-                        knowledge = client.models.generate_content(
-                            model="gemini-2.5-flash",
-                            contents=f"Extract all known facts from the following reasoning. Output must be in point form.\n{cur_node.reason}"
-                        )
-                        constraints = client.models.generate_content(
-                            model="gemini-2.5-flash",
-                            contents=f"Extract all restrictions on our solution from the following reasoning. Output must be in point form.\n{cur_node.reason}"
-                        )
-                        print(response.text)
-                        last_response = write_email(knowledge.text, constraints.text)
-                        return cur_node # if we write, we will always exit
-                    case _:
-                        print(f"Tried using tool: {cur_node.tool}")
-                        last_response = cur_node.reason
+            if cur_node.progress >= 1 or cur_node.tool == 'write_email':
+                print("Done!")
+                return cur_node
+            else: last_response = cur_node.tool_result
+            
 
 if __name__ == '__main__':
     test_agent = Agent()

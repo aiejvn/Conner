@@ -79,6 +79,8 @@ No confidential information is inadvertently included
 Professional tone is maintained throughout
 Email serves the intended business purpose
 
+Do not include this verification in your output. 
+
 Remember: Your primary obligation is to protect corporate confidentiality while delivering effective business communication. When in doubt, prioritize security over completeness."""
 
 load_dotenv()
