@@ -6,12 +6,22 @@ from typing import List, Dict
 from google import genai
 import os
 from dotenv import load_dotenv
-from search_email_prompt import base_prompt
+
+base_prompt="""You are an AI assistant specialized in searching for relevant professional business emails for enterprise environments. Your role is to find and return all emails that meet specific requirements while maintaining corporate standards and confidentiality.
+Input Structure
+You will receive:
+
+EMAILS: List of emails you must search
+CRITERIA: List of rules all returned emails must meet
+
+Output Format: 
+Provide a list of all emails that apply, structued as '[email_id1, email_id2, ..., email_id_n]', where the email_id's are the ID numbers of the returned emails.
+Only include this list in your answer and no other text."""
 
 load_dotenv()
 client = genai.Client(api_key=os.environ['GEMINI_API_KEY'])
 
-def search_emails(emails: List[Dict], criteria: List[str]) -> List[str]:
+def search_emails(emails: List[Dict], criteria: str) -> List[str]:
     relevant_emails = []
     prompt = base_prompt + "\n\nEMAILS:\n"
 
@@ -23,10 +33,9 @@ def search_emails(emails: List[Dict], criteria: List[str]) -> List[str]:
         
     prompt += "\n\nCRITERIA:\n"
     if criteria:
-        for rule in criteria:
-            prompt += f"- {rule}\n"
+            prompt += f"{criteria}\n"
     else:
-        prompt += "- None"       
+        prompt += "- None\n"       
     response = client.models.generate_content(
         model="gemini-2.5-flash",
         contents=prompt
@@ -44,9 +53,7 @@ if __name__ == '__main__':
             emails.append(email_data)
 
     # Define criteria for emails that can be reasonably deleted
-    criteria = [
-        "Look for all emails related to the Q3 marketing campaign."
-    ]
+    criteria = "- Look for all emails related to the Q3 marketing campaign."
 
     # Search for emails matching the criteria
     relevant_emails = search_emails(emails, criteria)

@@ -1,11 +1,27 @@
 from openai import OpenAI
+from google import genai
 from dotenv import load_dotenv
-import os
 from pydantic import BaseModel
+from time import sleep
+from typing import List, Dict
+import os
 import uuid
 import json
 
-from time import sleep
+from agent_prompt import base_prompt
+from tools.search_emails import search_emails
+from tools.tag_email import tag_emails
+from tools.write_email import write_email
+
+def load_emails() -> List[Dict]:
+    email_files = [f for f in os.listdir('./emails') if f.endswith('.json')]
+    emails = []
+    for file in email_files:
+        with open(f'./emails/{file}', 'r') as f:
+            email_data = json.load(f)
+            email_data['id'] = file.split('.')[0]  # Add ID based on filename
+            emails.append(email_data)
+    return emails
 
 
 class Node(BaseModel):
@@ -14,6 +30,15 @@ class Node(BaseModel):
     confidence: float
     uuid: str
     parent_uuid: str
+    
+    def get(self, trait: str, default: str):
+        """
+        Implements dict.get(val, default) for Node attributes.
+        Returns the value of the specified trait if it exists, otherwise returns the default value.
+        """
+        return getattr(self, trait, default)
+        
+
 
 class Agent:
     def __init__(self):
@@ -23,17 +48,10 @@ class Agent:
         OPENAI_API_KEY = os.environ['OPENAI_API_KEY']
         self.client = OpenAI(api_key=OPENAI_API_KEY)
         self.conversation = [
-        # TODO: When v1 is done, fix this prompt. Lol.
-        {
-            "role": "system", 
-            "content": 
-"""You are a smart assistant with many tools at your disposal. 
-Follow the user's commands as best as you can, and include a brief, one-sentence explaining your thinking, as well as a confidence value between 0 and 1 expressing how confident you are in your reasoning.
-If no tool is needed, simply return N/A as tool used.
-If your confidence is >=0.9, include an answer alongside your reasoning.
-Otherwise, describe what information you have and what information you are looking for, as if handing off the problem to someone else.
-If no tool applies but you still cannot determine an answer, use the 'self-reflection' tool and try to make connections between currently known facts.
-Make sure to consider all reasonable routes when deciding output. Only use specific tools when they seem reasonable."""}
+            {
+                "role": "system", 
+                "content": base_prompt
+            }
         ]
         self.conv_nodes = []
         
@@ -78,17 +96,51 @@ Make sure to consider all reasonable routes when deciding output. Only use speci
         Calls get_response_one until confidence exceeds threshold of 0.9.
         Then returns final result, as a node.
         """
+        last_response = input
         while True:
-            cur_node = self.get_response_one(input)
+            cur_node = self.get_response_one(last_response)
             if cur_node.confidence >= 0.9:
                 return cur_node
             else:
                 print("Conner needs another node...")
-                sleep(1) # To avoid overloading our API key
+                client = genai.Client(api_key=os.environ['GEMINI_API_KEY'])
+                emails = load_emails()
+                match cur_node.tool:
+                    case 'search_emails':
+                        response = client.models.generate_content(
+                            model="gemini-2.5-flash",
+                            contents=f"Translate the following reasoning into a set of criteria to apply to a search. Output must be in point form."
+                        )
+                        last_response = search_emails(emails, response.text)
+                    case 'tag_emails':
+                        response = client.models.generate_content(
+                            model="gemini-2.5-flash",
+                            contents=f"Translate the following reasoning into a set of tags and the criteria for each tag to apply. Output must be in point form (e.g. 'Delegate - all internal emails about unimportant tasks')."
+                        )
+                        last_response = tag_emails(emails, response.text)
+                    case 'write_email':
+                        knowledge = client.models.generate_content(
+                            model="gemini-2.5-flash",
+                            contents=f"Extract all known facts from the following reasoning. Output must be in point form.\n{cur_node.reason}"
+                        )
+                        constraints = client.models.generate_content(
+                            model="gemini-2.5-flash",
+                            contents=f"Extract all restrictions on our solution from the following reasoning. Output must be in point form.\n{cur_node.reason}"
+                        )
+                        last_response = write_email(knowledge.text, constraints.text)
+                    case _:
+                        print(f"Tried using tool: {cur_node.tool}")
+                        last_response = cur_node.reason
+
+                sleep(0.1) # To avoid overloading the API
 
 if __name__ == '__main__':
     test_agent = Agent()
-    test_rsp = test_agent.get_response("""Given the following message, who is going to a science fair? 
+    # test_rsp = test_agent.get_response("""Given the following message, who is going to a science fair? 
             
-            Alice and Bob are going to a science fair on Friday.""")
+    #         Alice and Bob are going to a science fair on Friday.""")
+    test_rsp = test_agent.get_response("""First, tag all emails that are high priority (AKA need to respond soon).
+Then search among those emails for ones sent by external sources.""")
     print(test_rsp)
+    
+    # TODO: Fix prompt to make it use tools.
