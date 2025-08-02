@@ -99,26 +99,37 @@ class Agent:
         last_response = input
         while True:
             cur_node = self.get_response_one(last_response)
-            if cur_node.confidence >= 0.9:
+            print(cur_node)
+            print(last_response)
+            if cur_node.tool == 'N/A':
                 return cur_node
             else:
                 print("Conner needs another node...")
                 client = genai.Client(api_key=os.environ['GEMINI_API_KEY'])
                 emails = load_emails()
+                
+                # Issue: Self-loop on searching? 
                 match cur_node.tool:
                     case 'search_emails':
+                        print("Searching emails...")
+                        
+                        # Needs a logic translation prompt. W/O, GEMINI will just shrug and await user clarification.
                         response = client.models.generate_content(
                             model="gemini-2.5-flash",
                             contents=f"Translate the following reasoning into a set of criteria to apply to a search. Output must be in point form."
                         )
+                        print(response.text)
                         last_response = search_emails(emails, response.text)
                     case 'tag_emails':
+                        print("Tagging emails...")
                         response = client.models.generate_content(
                             model="gemini-2.5-flash",
                             contents=f"Translate the following reasoning into a set of tags and the criteria for each tag to apply. Output must be in point form (e.g. 'Delegate - all internal emails about unimportant tasks')."
                         )
+                        print(response.text)
                         last_response = tag_emails(emails, response.text)
                     case 'write_email':
+                        print("Writing an email...")
                         knowledge = client.models.generate_content(
                             model="gemini-2.5-flash",
                             contents=f"Extract all known facts from the following reasoning. Output must be in point form.\n{cur_node.reason}"
@@ -127,20 +138,18 @@ class Agent:
                             model="gemini-2.5-flash",
                             contents=f"Extract all restrictions on our solution from the following reasoning. Output must be in point form.\n{cur_node.reason}"
                         )
+                        print(response.text)
                         last_response = write_email(knowledge.text, constraints.text)
                     case _:
                         print(f"Tried using tool: {cur_node.tool}")
                         last_response = cur_node.reason
-
-                sleep(0.1) # To avoid overloading the API
 
 if __name__ == '__main__':
     test_agent = Agent()
     # test_rsp = test_agent.get_response("""Given the following message, who is going to a science fair? 
             
     #         Alice and Bob are going to a science fair on Friday.""")
-    test_rsp = test_agent.get_response("""First, tag all emails that are high priority (AKA need to respond soon).
-Then search among those emails for ones sent by external sources.""")
+    # Note: tag is too slow ATM. We may need another tool.
+    test_rsp = test_agent.get_response("""First, search all emails for ones sent by external sources.
+Then, write a response email to the most important external sender, asking for more details on what they are talking about.""")
     print(test_rsp)
-    
-    # TODO: Fix prompt to make it use tools.
