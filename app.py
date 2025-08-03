@@ -40,7 +40,7 @@ def apply_debug_overrides(nodes):
     return nodes
 
 # Streamlit app title
-st.title("Work with Conner")
+st.title("Work with a Conner Agent")
         
 # Instructions
 st.markdown("---")
