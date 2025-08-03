@@ -1,5 +1,7 @@
 # **C**ollaborative **O**utput-time **N**eural **N**etworks for **E**nhanced **R**easoning (**CONNER**)
 
+![Detroit-Become-Human-Circle](images.jpeg)
+
 Canadian physicians spend 18.5 million hours annually on unnecessary administrative tasks - that's 55.6 million patient visits lost to paperwork instead of patient care. Physicians also spend 19 unpaid hours per week on administrative tasks, 75% of physicians report dissatisfaction when doing this unnecessary admin work, and 94% of physicians say they're overwhelmed by it. Furthermore, 40% of these administrative tasks don't require physician expertise.
 
 However, current AI agents perform poorly on administrative tasks. A 2024 study at Carnegie Mellon University, researchers found most AI agents struggled to complete over 90% of administrative tasks assigned to them, citing self-deception and shortcuts as a key factor hindering performance. We designed the CONNER framework to resolve this issue.
